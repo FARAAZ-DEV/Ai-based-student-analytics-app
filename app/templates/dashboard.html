@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard – Student Analytics</title>
+{% load static %}
+<link rel="stylesheet" href="{% static 'style.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <span class="nav-brand">🎓 Student Analytics</span>
+    <div class="nav-links">
+      <a href="{% url 'add_student' %}" class="btn-nav">+ Add Student</a>
+      <a href="{% url 'logout' %}">Logout</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- SUMMARY CARDS -->
+    <div class="stats-row">
+      <div class="stat-card blue">
+        <div class="stat-num">{{ students|length }}</div>
+        <div class="stat-label">Total Students</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-num">{{ pass_count }}</div>
+        <div class="stat-label">Passing</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-num">{{ fail_count }}</div>
+        <div class="stat-label">Failing</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-num">{{ top_students|length }}</div>
+        <div class="stat-label">Top Performers</div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="charts-row">
+      <div class="card chart-card">
+        <h3>📊 Marks per Student</h3>
+        <canvas id="barChart"></canvas>
+      </div>
+      <div class="card chart-card">
+        <h3>🥧 Pass vs Fail</h3>
+        <canvas id="pieChart"></canvas>
+      </div>
+      <div class="card chart-card">
+        <h3>🔵 Attendance vs Marks</h3>
+        <canvas id="scatterChart"></canvas>
+      </div>
+    </div>
+
+    <!-- TOP & WEAK PANELS -->
+    <div class="two-col">
+      <div class="card">
+        <h3>🏆 Top Performers</h3>
+        <ul class="mini-list">
+          {% for s in top_students %}
+          <li>
+            <span class="roll">{{ s.roll_no }}</span>
+            <span class="sname">{{ s.name }}</span>
+            <span class="badge badge-green">{{ s.marks }}%</span>
+          </li>
+          {% empty %}<li>No data yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="card">
+        <h3>⚠️ Weak Students</h3>
+        <ul class="mini-list">
+          {% for s in weak_students %}
+          <li>
+            <span class="roll">{{ s.roll_no }}</span>
+            <span class="sname">{{ s.name }}</span>
+            <span class="badge badge-red">{{ s.marks }}%</span>
+          </li>
+          {% empty %}<li>No data yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- STUDENT TABLE -->
+    <div class="card" style="margin-top:1.5rem;">
+      <h3>📋 All Students</h3>
+      {% if students %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Roll No</th><th>Name</th><th>Marks</th><th>Attendance</th>
+              <th>Result</th><th>Grade</th><th>Dropout Risk</th>
+              <th>Suggestion</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in students %}
+            <tr>
+              <td>{{ s.roll_no }}</td>
+              <td>{{ s.name }}</td>
+              <td>{{ s.marks }}</td>
+              <td>
+                <span class="{% if s.attendance < 50 %}att-low{% else %}att-ok{% endif %}">
+                  {{ s.attendance }}%
+                </span>
+              </td>
+              <td>
+                <span class="badge {% if s.pass_fail == 'Pass' %}badge-green{% else %}badge-red{% endif %}">
+                  {{ s.pass_fail }}
+                </span>
+              </td>
+              <td><span class="badge badge-blue">{{ s.grade }}</span></td>
+              <td>
+                <span class="badge {% if s.dropout_risk == 'High' %}badge-red{% else %}badge-green{% endif %}">
+                  {{ s.dropout_risk }}
+                </span>
+              </td>
+              <td class="suggestion">{{ s.suggestion|default:"—" }}</td>
+              <td class="actions">
+                <a href="{% url 'edit_student' s.id %}" class="btn-edit">✏️</a>
+                <a href="{% url 'delete_student' s.id %}"
+                   onclick="return confirm('Delete {{ s.name }}?')"
+                   class="btn-del">🗑️</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="empty-msg">No students yet. <a href="{% url 'add_student' %}">Add one →</a></p>
+      {% endif %}
+    </div>
+  </div>
+  <footer class="footer" style="margin-top: 2rem; border-top: 1px solid var(--border); color: var(--muted); background-color: var(--surface); padding: 1rem;">
+          <p style="margin: 0; text-align: center;">&copy; 2026 Student Analytics. All rights reserved.</p>
+          <p style="margin: 0; text-align: center;">Created by Mohd. Faraz ⚡</p>
+        </div>
+  </footer>
+
+  <!-- CHART.JS — uses clean JSON from views.py -->
+  <script>
+    const students = {{ chart_data|safe }};   // ← clean JSON, safe to use
+    const names   = students.map(s => s.name);
+    const marks   = students.map(s => s.marks);
+    const attends = students.map(s => s.attendance);
+
+    // Bar Chart
+    new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: {
+        labels: names,
+        datasets: [{
+          label: 'Marks',
+          data: marks,
+          backgroundColor: marks.map(m => m >= 60 ? '#4ade80' : m >= 40 ? '#facc15' : '#f87171'),
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: { y: { min: 0, max: 100 } }
+      }
+    });
+
+    // Pie Chart
+    new Chart(document.getElementById('pieChart'), {
+      type: 'pie',
+      data: {
+        labels: ['Pass', 'Fail'],
+        datasets: [{
+          data: [{{ pass_count }}, {{ fail_count }}],
+          backgroundColor: ['#4ade80', '#f87171'],
+          borderWidth: 2,
+        }]
+      },
+      options: { plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Scatter Chart
+    new Chart(document.getElementById('scatterChart'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: 'Students',
+          data: students.map(s => ({ x: s.attendance, y: s.marks, label: s.name })),
+          backgroundColor: '#6366f1cc',
+          pointRadius: 7,
+        }]
+      },
+      options: {
+        scales: {
+          x: { title: { display: true, text: 'Attendance %' }, min: 0, max: 100 },
+          y: { title: { display: true, text: 'Marks' }, min: 0, max: 100 }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.raw.label}: (${ctx.raw.x}%, ${ctx.raw.y})`
+            }
+          }
+        }
+      }
+    });
+  </script>
+  
+</body>
+</html>
