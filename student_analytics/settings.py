@@ -4,8 +4,8 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent  # points to outer student_analytics/
 
 SECRET_KEY = 'django-insecure-student-analytics-key-2024'
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+DEBUG = False
+ALLOWED_HOSTS = ['FARAAZ.pythonanywhere.com']
 
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
@@ -53,3 +53,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SESSION_ENGINE = 'django.contrib.sessions.backends.file' 
 SESSION_FILE_PATH = BASE_DIR / 'sessions'
 os.makedirs(SESSION_FILE_PATH, exist_ok=True)
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
