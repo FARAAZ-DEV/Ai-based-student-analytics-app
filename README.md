@@ -59,7 +59,7 @@ student_analytics/
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/MOHD-FARAZ-01/Ai-based-student-analytics-app.git
+git clone https://github.com/FARAAZ-DEV/Ai-based-student-analytics-app.git
 cd Ai-based-student-analytics-app
 ```
 
