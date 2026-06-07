@@ -3,8 +3,7 @@
 A web-based student performance analytics system built with **Django** and **Machine Learning**. Predicts pass/fail, academic grade, and dropout risk for each student using Logistic Regression and Decision Tree algorithms.
 
 🚀 **Live Demo** → https://faraaz.pythonanywhere.com
-
-📁 **Full Project Folder** → https://drive.google.com/file/d/1artNmjFojJdMg8pTe5GHlWyCzI60mydb/view?usp=sharing 
+ 
 ---
 
 ## ✨ Features
