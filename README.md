@@ -4,6 +4,7 @@ A web-based student performance analytics system built with **Django** and **Mac
 
 🚀 **Live Demo** → https://faraaz.pythonanywhere.com
 
+📁 **Full Project Folder** → https://drive.google.com/file/d/1artNmjFojJdMg8pTe5GHlWyCzI60mydb/view?usp=sharing 
 ---
 
 ## ✨ Features
