@@ -21,7 +21,9 @@ body[data-theme="dark"] {
   --bg:        #07111f;
   --surface:   rgba(15, 23, 42, 0.78);
   --surface2:  rgba(19, 34, 56, 0.9);
-  --border:    rgba(147, 197, 253, 0.25);
+  --border:   git restore --source=HEAD --staged --worktree student_analytics/__pycache__/settings.cpython-313.pyc
+  del /f /q cookies.txt
+  del /f /q login_out.html rgba(147, 197, 253, 0.25);
   --accent:    #60a5fa;
   --accent2:   #93c5fd;
   --text:      #edf6ff;
