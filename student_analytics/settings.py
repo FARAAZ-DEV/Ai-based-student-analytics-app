@@ -4,8 +4,8 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent  # points to outer student_analytics/
 
 SECRET_KEY = 'django-insecure-student-analytics-key-2024'
-DEBUG = False
-ALLOWED_HOSTS = ['FARAAZ.pythonanywhere.com']
+DEBUG = True
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'FARAAZ.pythonanywhere.com']
 
 INSTALLED_APPS = [
     'django.contrib.contenttypes',

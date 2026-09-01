@@ -10,8 +10,15 @@
 </head>
 <body>
   <nav class="navbar">
-    <span class="nav-brand">🎓 Student Analytics</span>
+    <div class="nav-left">
+      <span class="nav-brand">🎓 Student Analytics</span>
+    </div>
     <div class="nav-links">
+      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme" aria-pressed="false">
+        <span class="toggle-track">
+          <span class="toggle-thumb">🌙</span>
+        </span>
+      </button>
       <a href="{% url 'add_student' %}" class="btn-nav">+ Add Student</a>
       <a href="{% url 'logout' %}">Logout</a>
     </div>
@@ -138,13 +145,37 @@
     </div>
   </div>
   <footer class="footer" style="margin-top: 2rem; border-top: 1px solid var(--border); color: var(--muted); background-color: var(--surface); padding: 1rem;">
-          <p style="margin: 0; text-align: center;">&copy; 2026 Student Analytics. All rights reserved.</p>
-          <p style="margin: 0; text-align: center;">Created by Mohd. Faraz ⚡</p>
-        </div>
+    <p style="margin: 0; text-align: center;">&copy; 2026 Student Analytics. All rights reserved.</p>
+    <p style="margin: 0; text-align: center;">Created by Mohd. Faraz ⚡</p>
   </footer>
 
   <!-- CHART.JS — uses clean JSON from views.py -->
   <script>
+    const applyTheme = (theme) => {
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('student-theme', theme);
+      const themeToggle = document.getElementById('themeToggle');
+      if (themeToggle) {
+        const thumb = themeToggle.querySelector('.toggle-thumb');
+        const isDark = theme === 'dark';
+        themeToggle.classList.toggle('is-dark', isDark);
+        themeToggle.setAttribute('aria-pressed', String(isDark));
+        themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+        if (thumb) thumb.textContent = isDark ? '☀️' : '🌙';
+      }
+    };
+
+    const savedTheme = localStorage.getItem('student-theme') || 'light';
+    applyTheme(savedTheme);
+
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const nextTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+      });
+    }
+
     const students = {{ chart_data|safe }};   // ← clean JSON, safe to use
     const names   = students.map(s => s.name);
     const marks   = students.map(s => s.marks);
